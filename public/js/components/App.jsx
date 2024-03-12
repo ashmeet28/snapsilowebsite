@@ -1,11 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import SearchSection from "./SearchSection.jsx";
-import UserSection from "./UserSection.jsx";
+import SearchImages from "./SearchImages.jsx";
+import SignInEnterEmail from "./SignInEnterEmail.jsx";
+import SignInEnterCode from "./SignInEnterCode.jsx";
 
 export default function MyApp() {
-    const [isSearchingImages, setIsSearchingImages] = useState(true);
+    const APP_ST = {
+        SEARCH_IMAGES: 1,
+        CHECK_IF_USER_SIGNED_IN: 2,
+        SIGN_IN_ENTER_EMAIL: 3,
+        SIGN_IN_ENTER_CODE: 4,
+    };
 
+    const [currAppSt, setCurrAppSt] = useState(APP_ST.SEARCH_IMAGES);
+
+
+    useEffect(() => {
+        if (currAppSt === APP_ST.CHECK_IF_USER_SIGNED_IN) {
+            setCurrAppSt(APP_ST.SIGN_IN_ENTER_EMAIL);
+        }
+
+        return () => { };
+    }, [currAppSt]);
 
     return (
         <div className="max-w-screen-2xl mx-auto px-4">
@@ -16,16 +32,28 @@ export default function MyApp() {
                 </div>
 
                 <div className="flex flex-row">
-                    {isSearchingImages ?
-                        <img onClick={() => setIsSearchingImages(false)}
-                            className="h-12 opacity-75 cursor-pointer" src="/svg/person-circle-outline.svg" alt="person icon" />
-                        :
-                        <img onClick={() => setIsSearchingImages(true)}
+                    {currAppSt === APP_ST.SEARCH_IMAGES &&
+                        <img onClick={() => setCurrAppSt(APP_ST.CHECK_IF_USER_SIGNED_IN)}
+                            className="h-12 opacity-75 cursor-pointer" src="/svg/person-circle-outline.svg" alt="person icon" />}
+                    {(currAppSt !== APP_ST.SEARCH_IMAGES) &&
+                        <img onClick={() => setCurrAppSt(APP_ST.SEARCH_IMAGES)}
                             className="h-12 opacity-75 cursor-pointer" src="/svg/globe-outline.svg" alt="globe icon" />}
                 </div>
             </div>
 
-            {isSearchingImages ? <SearchSection></SearchSection> : <UserSection></UserSection>}
-        </div >
+            {currAppSt === APP_ST.SEARCH_IMAGES && <SearchImages></SearchImages>}
+
+            {(currAppSt === APP_ST.SIGN_IN_ENTER_EMAIL || currAppSt === APP_ST.SIGN_IN_ENTER_CODE) &&
+                <div className="w-full max-w-[400px] mx-auto p-2 my-10">
+                    <h1 className="text-center p-2 text-4xl my-2">Sign In</h1>
+
+                    {currAppSt === APP_ST.SIGN_IN_ENTER_EMAIL &&
+                        <SignInEnterEmail onEmailEntered={(v) => { console.log(v); setCurrAppSt(APP_ST.SIGN_IN_ENTER_CODE); }}></SignInEnterEmail>}
+
+                    {currAppSt === APP_ST.SIGN_IN_ENTER_CODE &&
+                        <SignInEnterCode onCodeEntered={(v) => console.log(v)}></SignInEnterCode>}
+                </div>
+            }
+        </div>
     );
 }
