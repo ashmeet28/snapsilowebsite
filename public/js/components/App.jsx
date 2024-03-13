@@ -10,8 +10,10 @@ export default function MyApp() {
         CHECK_IF_USER_SIGNED_IN: 2,
         SIGN_IN_ENTER_EMAIL: 3,
         SIGN_IN_ENTER_CODE: 4,
-        USER_IMAGES: 5,
-        USER_UPLOAD_IMAGE: 6,
+        SIGN_IN_ENTER_CODE_TRY_AGAIN: 5,
+        SIGN_IN_VERIFY_CODE: 6,
+        USER_IMAGES: 7,
+        USER_UPLOAD_IMAGE: 8,
     };
 
     const [currAppSt, setCurrAppSt] = useState(APP_ST.SEARCH_IMAGES);
@@ -61,7 +63,11 @@ export default function MyApp() {
 
             {currAppSt === APP_ST.SEARCH_IMAGES && <SearchImages></SearchImages>}
 
-            {(currAppSt === APP_ST.SIGN_IN_ENTER_EMAIL || currAppSt === APP_ST.SIGN_IN_ENTER_CODE) &&
+            {(currAppSt === APP_ST.SIGN_IN_ENTER_EMAIL ||
+                currAppSt === APP_ST.SIGN_IN_ENTER_CODE ||
+                currAppSt === APP_ST.SIGN_IN_VERIFY_CODE ||
+                currAppSt === APP_ST.SIGN_IN_ENTER_CODE_TRY_AGAIN) &&
+
                 <div className="w-full max-w-[400px] mx-auto p-2 my-10">
                     <h1 className="text-center p-2 text-4xl my-2">Sign In</h1>
 
@@ -70,21 +76,45 @@ export default function MyApp() {
                             fetch("/api/send-code", { method: "POST", body: JSON.stringify({ email_address: v }) });
                             setUserEmail(v);
                             setCurrAppSt(APP_ST.SIGN_IN_ENTER_CODE);
-                        }}></SignInEnterEmail>}
+                        }}></SignInEnterEmail>
+                    }
 
-                    {currAppSt === APP_ST.SIGN_IN_ENTER_CODE &&
-                        <SignInEnterCode onCodeEntered={(v) => {
-                            fetch("/api/verify-code", {
-                                method: "POST", body: JSON.stringify({ email_address: userEmail, verification_code: v })
-                            }).then((res) => {
-                                if (res.status === 200) {
-                                    res.json().then((data) => {
-                                        setUserAuthToken(data.auth_token);
-                                    })
-                                }
-                            })
-                        }}></SignInEnterCode>}
+                    {(currAppSt === APP_ST.SIGN_IN_ENTER_CODE ||
+                        currAppSt === APP_ST.SIGN_IN_VERIFY_CODE ||
+                        currAppSt === APP_ST.SIGN_IN_ENTER_CODE_TRY_AGAIN) && (
+                            <>
+                                <SignInEnterCode
+                                    onCodeEntered={(v) => {
+                                        setCurrAppSt(APP_ST.SIGN_IN_VERIFY_CODE)
+
+                                        fetch("/api/verify-code", {
+                                            method: "POST", body: JSON.stringify({ email_address: userEmail, verification_code: v })
+                                        }).then((res) => {
+                                            if (res.status === 200) {
+                                                res.json().then((data) => {
+                                                    setUserAuthToken(data.auth_token);
+                                                    setCurrAppSt(APP_ST.USER_IMAGES)
+                                                })
+                                            } else {
+                                                setCurrAppSt(APP_ST.SIGN_IN_ENTER_CODE_TRY_AGAIN)
+                                            }
+                                        })
+                                    }}
+                                    isInputDisabled={(currAppSt === APP_ST.SIGN_IN_VERIFY_CODE)}>
+                                </SignInEnterCode>
+                                <p className="opacity-75 text-center p-2">
+                                    {currAppSt === APP_ST.SIGN_IN_ENTER_CODE && "Enter the code sent to your email"}
+                                    {currAppSt === APP_ST.SIGN_IN_VERIFY_CODE && "Signing in..."}
+                                    {currAppSt === APP_ST.SIGN_IN_ENTER_CODE_TRY_AGAIN && "Try again"}
+                                </p>
+                            </>
+                        )
+                    }
                 </div>
+            }
+
+            {currAppSt === APP_ST.USER_IMAGES &&
+                <div>No Images</div>
             }
         </div >
     );
