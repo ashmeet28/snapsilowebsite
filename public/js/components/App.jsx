@@ -18,7 +18,7 @@ export default function MyApp() {
 
     const [currAppSt, setCurrAppSt] = useState(APP_ST.SEARCH_IMAGES);
     const [userAuthToken, setUserAuthToken] = useState('');
-    const [isUserAuthTokenInit, setIsUserAuthTokenInit] = useState(true);
+    const [isUserAuthTokenInit, setIsUserAuthTokenInit] = useState(false);
     const [userEmail, setUserEmail] = useState('');
 
     useEffect(() => {
@@ -37,7 +37,11 @@ export default function MyApp() {
     useEffect(() => {
         switch (currAppSt) {
             case APP_ST.CHECK_IF_USER_SIGNED_IN: {
-                setCurrAppSt(APP_ST.SIGN_IN_ENTER_EMAIL);
+                if (userAuthToken === '') {
+                    setCurrAppSt(APP_ST.SIGN_IN_ENTER_EMAIL);
+                } else {
+                    setCurrAppSt(APP_ST.USER_IMAGES);
+                }
             }
         }
         return () => { };
@@ -93,7 +97,7 @@ export default function MyApp() {
                                             if (res.status === 200) {
                                                 res.json().then((data) => {
                                                     setUserAuthToken(data.auth_token);
-                                                    setCurrAppSt(APP_ST.USER_IMAGES)
+                                                    setCurrAppSt(APP_ST.CHECK_IF_USER_SIGNED_IN)
                                                 })
                                             } else {
                                                 setCurrAppSt(APP_ST.SIGN_IN_ENTER_CODE_TRY_AGAIN)
