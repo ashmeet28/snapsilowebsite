@@ -5,7 +5,7 @@ import SignInEnterEmail from "./SignInEnterEmail.jsx";
 import SignInEnterCode from "./SignInEnterCode.jsx";
 
 export default function MyApp() {
-    const APP_ST = {
+    const A_S = {
         SEARCH_IMAGES: 1,
         CHECK_IF_USER_SIGNED_IN: 2,
         SIGN_IN_ENTER_EMAIL: 3,
@@ -16,7 +16,7 @@ export default function MyApp() {
         USER_UPLOAD_IMAGE: 8,
     };
 
-    const [currAppSt, setCurrAppSt] = useState(APP_ST.SEARCH_IMAGES);
+    const [currAppSt, setCurrAppSt] = useState(A_S.SEARCH_IMAGES);
     const [userAuthToken, setUserAuthToken] = useState('');
     const [isUserAuthTokenInit, setIsUserAuthTokenInit] = useState(false);
     const [userEmail, setUserEmail] = useState('');
@@ -36,11 +36,11 @@ export default function MyApp() {
 
     useEffect(() => {
         switch (currAppSt) {
-            case APP_ST.CHECK_IF_USER_SIGNED_IN: {
+            case A_S.CHECK_IF_USER_SIGNED_IN: {
                 if (userAuthToken === '') {
-                    setCurrAppSt(APP_ST.SIGN_IN_ENTER_EMAIL);
+                    setCurrAppSt(A_S.SIGN_IN_ENTER_EMAIL);
                 } else {
-                    setCurrAppSt(APP_ST.USER_IMAGES);
+                    setCurrAppSt(A_S.USER_IMAGES);
                 }
             }
         }
@@ -56,40 +56,40 @@ export default function MyApp() {
                 </div>
 
                 <div className="flex flex-row">
-                    {currAppSt === APP_ST.SEARCH_IMAGES ?
-                        <img onClick={() => setCurrAppSt(APP_ST.CHECK_IF_USER_SIGNED_IN)}
+                    {currAppSt === A_S.SEARCH_IMAGES ?
+                        <img onClick={() => setCurrAppSt(A_S.CHECK_IF_USER_SIGNED_IN)}
                             className="h-12 opacity-75 cursor-pointer" src="/svg/person-circle-outline.svg" alt="person icon" />
                         :
-                        <img onClick={() => setCurrAppSt(APP_ST.SEARCH_IMAGES)}
+                        <img onClick={() => setCurrAppSt(A_S.SEARCH_IMAGES)}
                             className="h-12 opacity-75 cursor-pointer" src="/svg/globe-outline.svg" alt="globe icon" />}
                 </div>
             </div>
 
-            {currAppSt === APP_ST.SEARCH_IMAGES && <SearchImages></SearchImages>}
+            {currAppSt === A_S.SEARCH_IMAGES && <SearchImages></SearchImages>}
 
-            {(currAppSt === APP_ST.SIGN_IN_ENTER_EMAIL ||
-                currAppSt === APP_ST.SIGN_IN_ENTER_CODE ||
-                currAppSt === APP_ST.SIGN_IN_VERIFY_CODE ||
-                currAppSt === APP_ST.SIGN_IN_ENTER_CODE_TRY_AGAIN) &&
+            {(currAppSt === A_S.SIGN_IN_ENTER_EMAIL ||
+                currAppSt === A_S.SIGN_IN_ENTER_CODE ||
+                currAppSt === A_S.SIGN_IN_VERIFY_CODE ||
+                currAppSt === A_S.SIGN_IN_ENTER_CODE_TRY_AGAIN) &&
 
                 <div className="w-full max-w-[400px] mx-auto p-2 my-10">
                     <h1 className="text-center p-2 text-4xl my-2">Sign In</h1>
 
-                    {currAppSt === APP_ST.SIGN_IN_ENTER_EMAIL &&
+                    {currAppSt === A_S.SIGN_IN_ENTER_EMAIL &&
                         <SignInEnterEmail onEmailEntered={(v) => {
                             fetch("/api/send-code", { method: "POST", body: JSON.stringify({ email_address: v }) });
                             setUserEmail(v);
-                            setCurrAppSt(APP_ST.SIGN_IN_ENTER_CODE);
+                            setCurrAppSt(A_S.SIGN_IN_ENTER_CODE);
                         }}></SignInEnterEmail>
                     }
 
-                    {(currAppSt === APP_ST.SIGN_IN_ENTER_CODE ||
-                        currAppSt === APP_ST.SIGN_IN_VERIFY_CODE ||
-                        currAppSt === APP_ST.SIGN_IN_ENTER_CODE_TRY_AGAIN) && (
+                    {(currAppSt === A_S.SIGN_IN_ENTER_CODE ||
+                        currAppSt === A_S.SIGN_IN_VERIFY_CODE ||
+                        currAppSt === A_S.SIGN_IN_ENTER_CODE_TRY_AGAIN) && (
                             <>
                                 <SignInEnterCode
                                     onCodeEntered={(v) => {
-                                        setCurrAppSt(APP_ST.SIGN_IN_VERIFY_CODE)
+                                        setCurrAppSt(A_S.SIGN_IN_VERIFY_CODE)
 
                                         fetch("/api/verify-code", {
                                             method: "POST", body: JSON.stringify({ email_address: userEmail, verification_code: v })
@@ -97,19 +97,19 @@ export default function MyApp() {
                                             if (res.status === 200) {
                                                 res.json().then((data) => {
                                                     setUserAuthToken(data.auth_token);
-                                                    setCurrAppSt(APP_ST.CHECK_IF_USER_SIGNED_IN)
+                                                    setCurrAppSt(A_S.CHECK_IF_USER_SIGNED_IN)
                                                 })
                                             } else {
-                                                setCurrAppSt(APP_ST.SIGN_IN_ENTER_CODE_TRY_AGAIN)
+                                                setCurrAppSt(A_S.SIGN_IN_ENTER_CODE_TRY_AGAIN)
                                             }
                                         })
                                     }}
-                                    isInputDisabled={(currAppSt === APP_ST.SIGN_IN_VERIFY_CODE)}>
+                                    isInputDisabled={(currAppSt === A_S.SIGN_IN_VERIFY_CODE)}>
                                 </SignInEnterCode>
                                 <p className="opacity-75 text-center p-2">
-                                    {currAppSt === APP_ST.SIGN_IN_ENTER_CODE && "Enter the code sent to your email"}
-                                    {currAppSt === APP_ST.SIGN_IN_VERIFY_CODE && "Signing in..."}
-                                    {currAppSt === APP_ST.SIGN_IN_ENTER_CODE_TRY_AGAIN && "Try again"}
+                                    {currAppSt === A_S.SIGN_IN_ENTER_CODE && "Enter the code sent to your email"}
+                                    {currAppSt === A_S.SIGN_IN_VERIFY_CODE && "Signing in..."}
+                                    {currAppSt === A_S.SIGN_IN_ENTER_CODE_TRY_AGAIN && "Try again"}
                                 </p>
                             </>
                         )
@@ -117,7 +117,7 @@ export default function MyApp() {
                 </div>
             }
 
-            {currAppSt === APP_ST.USER_IMAGES &&
+            {currAppSt === A_S.USER_IMAGES &&
                 <div>No Images</div>
             }
         </div >
