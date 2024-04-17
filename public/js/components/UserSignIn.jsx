@@ -14,9 +14,9 @@ export default function UserSignIn({ onSignIn }) {
     return (
         <div className="w-full max-w-[400px] mx-auto p-2 my-10">
             <h1 className="text-center p-2 text-4xl my-2">Sign In</h1>
-            <input className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline my-2 disabled:shadow-none" type="text"
+            <input className="text-center lowercase shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline my-2 disabled:shadow-none" type="text"
                 value={userEmail} onChange={(e) => setUserEmail(e.target.value)}
-                placeholder="Email address" disabled={currState !== S_ENTER_EMAIL} />
+                placeholder="username@example.com" disabled={currState !== S_ENTER_EMAIL} />
             <br />
 
             {currState === S_ENTER_EMAIL ?
@@ -27,22 +27,24 @@ export default function UserSignIn({ onSignIn }) {
                     }}>Next</button>
                 :
                 <>
-                    <input className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline my-2 disabled:shadow-none" type="text"
+                    <input className="text-center shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline my-2 disabled:shadow-none" type="text"
                         value={userCode} onChange={(e) => setUserCode(e.target.value)}
                         placeholder="Verification code" disabled={!(currState === S_ENTER_CODE || currState === S_ENTER_CODE_TRY_AGAIN)} />
                     <br />
                     <button className="bg-blue-600 w-full text-white font-bold py-2 px-4 rounded my-2 disabled:opacity-75"
                         onClick={() => {
                             setCurrState(S_SIGNING_IN);
-                            fetch("/api/verify-code", {
+                            fetch("/api/sign-in-with-code", {
                                 method: "POST", body: JSON.stringify({ email_address: userEmail, verification_code: userCode })
                             }).then((res) => {
                                 if (res.status === 200) {
                                     res.json().then((data) => {
-                                        onSignIn(data);
+                                        if (data.auth_token === "") {
+                                            setCurrState(S_ENTER_CODE_TRY_AGAIN);
+                                        } else {
+                                            onSignIn(data);
+                                        }
                                     })
-                                } else {
-                                    setCurrState(S_ENTER_CODE_TRY_AGAIN);
                                 }
                             })
                         }} disabled={currState === S_SIGNING_IN}>Done</button>
