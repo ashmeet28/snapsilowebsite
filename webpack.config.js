@@ -2,9 +2,9 @@ const path = require('path');
 
 module.exports = {
     mode: 'development',
-    entry: './public/js/main.js',
+    entry: './src/components/Main.jsx',
     output: {
-        filename: './public/js/main-bundle.js',
+        filename: './src/js/main-bundle.js',
         path: path.resolve(__dirname),
     },
     module: {
