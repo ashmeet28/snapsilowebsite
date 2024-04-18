@@ -15,7 +15,7 @@ export default function UserDash({ userAuthToken, onSignOut }) {
         <>
             <div className="flex flex-row justify-center items-center py-6">
                 <div className="flex flex-row justify-center gap-4 py-2 px-4 shadow rounded">
-                    <div className="flex items-center justify-center gap-1 cursor-pointer" onClick={() => setCurrState(S_PROFILE)}>
+                    <div className="flex items-center justify-center gap-1 cursor-pointer" onClick={() => { setCurrState(S_PROFILE); console.log(userAuthToken) }}>
                         <img className="w-8 cursor-pointer opacity-75" src="/svg/person-circle-outline.svg" alt="" />
                         <h3 className="text-lg">Profile</h3>
                     </div>
@@ -30,7 +30,8 @@ export default function UserDash({ userAuthToken, onSignOut }) {
                 </div>
             </div>
 
-            {currState === S_PROFILE && <UserProfile></UserProfile>}
+            {currState === S_PROFILE &&
+                <UserProfile userAuthToken={userAuthToken} onSignOut={() => onSignOut()}></UserProfile>}
             {currState === S_IMAGES && <UserImages></UserImages>}
             {currState === S_UPLOAD && <UserUpload></UserUpload>}
         </>

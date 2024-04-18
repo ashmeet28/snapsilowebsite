@@ -48,7 +48,7 @@ export default function App() {
                     {userAuthToken === '' ?
                         <UserSignIn onSignIn={(tok) => setUserAuthToken(tok)}></UserSignIn>
                         :
-                        <UserDash onSignOut={() => setUserAuthToken('')}></UserDash>
+                        <UserDash userAuthToken={userAuthToken} onSignOut={() => setUserAuthToken('')}></UserDash>
                     }
                 </>
             }
