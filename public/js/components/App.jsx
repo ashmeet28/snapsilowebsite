@@ -1,11 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-import SearchImagesBox from "./SearchImagesBox.jsx";
-import UserMenuBox from "./UserMenuBox.jsx";
+import ImagesExplorer from "./ImagesExplorer.jsx";
 import UserSignIn from "./UserSignIn.jsx"
+import UserDash from "./UserDash.jsx";
 
 export default function App() {
     const [isSearchingImgs, setIsSearchingImgs] = useState(true);
+
+    const [userAuthToken, setUserAuthToken] = useState('');
+    const [isUserAuthTokenInit, setIsUserAuthTokenInit] = useState(false);
+
+    useEffect(() => {
+        if (isUserAuthTokenInit) {
+            localStorage.setItem('user_auth_token', userAuthToken);
+        } else {
+            if (localStorage.getItem('user_auth_token') !== null) {
+                setUserAuthToken(localStorage.getItem('user_auth_token'));
+            }
+            setIsUserAuthTokenInit(true);
+        }
+
+        return () => { };
+    }, [userAuthToken]);
 
     return (
         <div className="max-w-screen-2xl mx-auto px-4">
@@ -16,7 +32,7 @@ export default function App() {
                 </div>
                 <div>
                     {isSearchingImgs ?
-                        <img className="w-10 cursor-pointer opacity-75" src="/svg/person-outline.svg" alt="search icon"
+                        <img className="w-10 cursor-pointer opacity-75" src="/svg/person-outline.svg" alt="person icon"
                             onClick={() => setIsSearchingImgs(false)} />
                         :
                         <img className="w-10 cursor-pointer opacity-75" src="/svg/search-outline.svg" alt="search icon"
@@ -27,13 +43,18 @@ export default function App() {
 
             <div className="flex flex-row justify-center items-center py-6">
                 {isSearchingImgs ?
-                    <SearchImagesBox></SearchImagesBox>
+                    <ImagesExplorer></ImagesExplorer>
                     :
-                    <UserMenuBox></UserMenuBox>
+                    <>
+                        {userAuthToken === '' ?
+                            <UserSignIn onSignIn={(tok) => setUserAuthToken(tok)}></UserSignIn>
+                            :
+                            <UserDash onSignOut={() => setUserAuthToken('')}></UserDash>
+                        }
+                    </>
                 }
             </div>
 
-            <UserSignIn onSignIn={(v) => console.log(v)}></UserSignIn>
-        </div>
+        </div >
     )
 }

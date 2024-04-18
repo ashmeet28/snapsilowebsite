@@ -41,8 +41,9 @@ export default function UserSignIn({ onSignIn }) {
                                     res.json().then((data) => {
                                         if (data.auth_token === "") {
                                             setCurrState(S_ENTER_CODE_TRY_AGAIN);
+                                            setUserCode('');
                                         } else {
-                                            onSignIn(data);
+                                            onSignIn(data.auth_token);
                                         }
                                     })
                                 }
@@ -54,7 +55,7 @@ export default function UserSignIn({ onSignIn }) {
 
             {currState === S_ENTER_EMAIL && <p className="opacity-50 text-center p-2">Enter your email address</p>}
             {currState === S_ENTER_CODE && <p className="opacity-50 text-center p-2">Enter the code sent to your email address</p>}
-            {currState === S_ENTER_CODE_TRY_AGAIN && <p className="opacity-50 text-center p-2">Invalid code! Try again.</p>}
+            {currState === S_ENTER_CODE_TRY_AGAIN && <p className="opacity-50 text-center p-2">Please try again</p>}
             {currState === S_SIGNING_IN && <p className="opacity-50 text-center p-2">Signing in...</p>}
         </div>
     )
