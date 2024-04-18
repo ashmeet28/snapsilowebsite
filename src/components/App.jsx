@@ -41,19 +41,17 @@ export default function App() {
                 </div>
             </div >
 
-            <div className="flex flex-row justify-center items-center py-6">
-                {isSearchingImgs ?
-                    <ImagesExplorer></ImagesExplorer>
-                    :
-                    <>
-                        {userAuthToken === '' ?
-                            <UserSignIn onSignIn={(tok) => setUserAuthToken(tok)}></UserSignIn>
-                            :
-                            <UserDash onSignOut={() => setUserAuthToken('')}></UserDash>
-                        }
-                    </>
-                }
-            </div>
+            {isSearchingImgs ?
+                <ImagesExplorer></ImagesExplorer>
+                :
+                <>
+                    {userAuthToken === '' ?
+                        <UserSignIn onSignIn={(tok) => setUserAuthToken(tok)}></UserSignIn>
+                        :
+                        <UserDash onSignOut={() => setUserAuthToken('')}></UserDash>
+                    }
+                </>
+            }
 
         </div >
     )
